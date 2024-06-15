@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculadora de Centroide y momento de inercia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('fondo.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        canvas {
+            border: 1px solid black;
+            background-color: white;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Calculadora de Centroide y momento de inercia</h1>
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <br>
+    <div>
+        <button onclick="iniciarLinea()">Dibujar Línea</button>
+        <button onclick="prepararSemicirculo()">Dibujar Semicírculo</button>
+        <button onclick="prepararCuartoCirculo()">Dibujar 1/4 de Círculo</button>
+        <button onclick="prepararCirculo()">Dibujar Círculo</button>
+        <button onclick="prepararRectangulo()">Dibujar Rectángulo</button>
+        <button onclick="prepararCuadrado()">Dibujar Cuadrado</button>
+        <button onclick="exportToJPG()">Exportar a JPG</button>
+        <button onclick="limpiarLienzo()">Limpiar Lienzo</button>
+        <button onclick="undo()">Deshacer</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 2;
+        let isDrawing = false;
+        let startX, startY;
+        let lines = [];
+        let shapes = [];
+        let drawingMode = null;
+        let radius = 0;
+        let direction = '';
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+
+        function startDrawing(e) {
+            isDrawing = true;
+            startX = e.offsetX;
+            startY = e.offsetY;
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawShapes(ctx);
+            drawLines(ctx);
+            ctx.beginPath();
+            if (drawingMode === 'line') {
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(e.offsetX, e.offsetY);
+            } else if (drawingMode === 'semicircle' || drawingMode === 'quartercircle') {
+                let endX = e.offsetX;
+                let endY = e.offsetY;
+                radius = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+                if (drawingMode === 'semicircle') {
+                    drawSemiCirclePreview(ctx, startX, startY, radius, direction);
+                } else if (drawingMode === 'quartercircle') {
+                    drawQuarterCirclePreview(ctx, startX, startY, radius, direction);
+                }
+            } else if (drawingMode === 'circle') {
+                let endX = e.offsetX;
+                let endY = e.offsetY;
+                radius = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+                ctx.arc(startX, startY, radius, 0, 2 * Math.PI);
+            } else if (drawingMode === 'rectangle') {
+                let endX = e.offsetX;
+                let endY = e.offsetY;
+                let width = endX - startX;
+                let height = endY - startY;
+                ctx.rect(startX, startY, width, height);
+            } else if (drawingMode === 'square') {
+                let endX = e.offsetX;
+                let endY = e.offsetY;
+                let sideLength = Math.max(Math.abs(endX - startX), Math.abs(endY - startY));
+                ctx.rect(startX, startY, sideLength, sideLength);
+            }
+            ctx.stroke();
+        }
+
+        function stopDrawing(e) {
+            isDrawing = false;
+            const endX = e.offsetX;
+            const endY = e.offsetY;
+            if (drawingMode === 'line') {
+                lines.push({ start: { x: startX, y: startY }, end: { x: endX, y: endY } });
+            } else if (drawingMode === 'semicircle') {
+                shapes.push({ type: 'semicircle', x: startX, y: startY, radius: radius, direction: direction });
+            } else if (drawingMode === 'quartercircle') {
+                shapes.push({ type: 'quartercircle', x: startX, y: startY, radius: radius, direction: direction });
+            } else if (drawingMode === 'circle') {
+                shapes.push({ type: 'circle', x: startX, y: startY, radius: radius });
+            } else if (drawingMode === 'rectangle') {
+                let width = endX - startX;
+                let height = endY - startY;
+                shapes.push({ type: 'rectangle', x: startX, y: startY, width: width, height: height });
+            } else if (drawingMode === 'square') {
+                let sideLength = Math.max(Math.abs(endX - startX), Math.abs(endY - startY));
+                shapes.push({ type: 'square', x: startX, y: startY, sideLength: sideLength });
+            }
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawShapes(ctx);
+            drawLines(ctx);
+        }
+
+
+        function drawLines(ctx) {
+            ctx.beginPath();
+            lines.forEach(line => {
+                ctx.moveTo(line.start.x, line.start.y);
+                ctx.lineTo(line.end.x, line.end.y);
+            });
+            ctx.stroke();
+        }
+
+        function drawShapes(ctx) {
+            shapes.forEach(shape => {
+                ctx.beginPath();
+                if (shape.type === 'semicircle') {
+                    drawSemiCircle(ctx, shape.x, shape.y, shape.radius, shape.direction);
+                } else if (shape.type === 'quartercircle') {
+                    drawQuarterCircle(ctx, shape.x, shape.y, shape.radius, shape.direction);
+                } else if (shape.type === 'circle') {
+                    ctx.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI);
+                } else if (shape.type === 'rectangle') {
+                    ctx.rect(shape.x, shape.y, shape.width, shape.height);
+                } else if (shape.type === 'square') {
+                    ctx.rect(shape.x, shape.y, shape.sideLength, shape.sideLength);
+                }
+                ctx.stroke();
+            });
+        }
+
+        function drawSemiCircle(ctx, x, y, radius, direction) {
+            let startAngle, endAngle;
+            switch (direction) {
+                case 'izquierda':
+                    startAngle = 0.5 * Math.PI;
+                    endAngle = 1.5 * Math.PI;
+                    break;
+                case 'derecha':
+                    startAngle = 1.5 * Math.PI;
+                    endAngle = 0.5 * Math.PI;
+                    break;
+                case 'arriba':
+                    startAngle = 0;
+                    endAngle = Math.PI;
+                    break;
+                case 'abajo':
+                    startAngle = Math.PI;
+                    endAngle = 2 * Math.PI;
+                    break;
+            }
+            ctx.arc(x, y, radius, startAngle, endAngle);
+        }
+
+        function drawQuarterCircle(ctx, x, y, radius, direction) {
+            let startAngle, endAngle;
+            switch (direction) {
+                case 'izquierda-arriba':
+                    startAngle = 0;
+                    endAngle = 0.5 * Math.PI;
+                    break;
+                case 'derecha-arriba':
+                    startAngle = 0.5 * Math.PI;
+                    endAngle = Math.PI;
+                    break;
+                case 'izquierda-abajo':
+                    startAngle = 1.5 * Math.PI;
+                    endAngle = 2 * Math.PI;
+                    break;
+                case 'derecha-abajo':
+                    startAngle = Math.PI;
+                    endAngle = 1.5 * Math.PI;
+                    break;
+            }
+            ctx.arc(x, y, radius, startAngle, endAngle);
+        }
+
+        function drawSemiCirclePreview(ctx, x, y, radius, direction) {
+            let startAngle, endAngle;
+            switch (direction) {
+                case 'izquierda':
+                    startAngle = 0.5 * Math.PI;
+                    endAngle = 1.5 * Math.PI;
+                    break;
+                    case 'derecha':
+                    startAngle = 1.5 * Math.PI;
+                    endAngle = 0.5 * Math.PI;
+                    break;
+                case 'arriba':
+                    startAngle = 0;
+                    endAngle = Math.PI;
+                    break;
+                case 'abajo':
+                    startAngle = Math.PI;
+                    endAngle = 2 * Math.PI;
+                    break;
+            }
+            ctx.arc(x, y, radius, startAngle, endAngle);
+        }
+
+        function drawQuarterCircle(ctx, x, y, radius, direction) {
+            let startAngle, endAngle;
+            switch (direction) {
+                case 'sup-izq':
+                    startAngle = 0.5 * Math.PI;
+                    endAngle = Math.PI;
+                    break;
+                case 'sup-der':
+                    startAngle = 0;
+                    endAngle = 0.5 * Math.PI;
+                    break;
+                case 'inf-izq':
+                    startAngle = Math.PI;
+                    endAngle = 1.5 * Math.PI;
+                    break;
+                case 'inf-der':
+                    startAngle = 1.5 * Math.PI;
+                    endAngle = 2 * Math.PI;
+                    break;
+            }
+            ctx.arc(x, y, radius, startAngle, endAngle);
+        }
+
+        function drawSemiCirclePreview(ctx, x, y, radius, direction) {
+            drawSemiCircle(ctx, x, y, radius, direction);
+        }
+
+        function drawQuarterCirclePreview(ctx, x, y, radius, direction) {
+            drawQuarterCircle(ctx, x, y, radius, direction);
+        }
+
+        function drawRectangle(ctx, x, y, width, height) {
+            ctx.rect(x, y, width, height);
+        }
+
+        function drawSquare(ctx, x, y, sideLength) {
+            ctx.rect(x, y, sideLength, sideLength);
+        }
+
+        function iniciarLinea() {
+            drawingMode = 'line';
+        }
+
+        function prepararSemicirculo() {
+            let tempRadius = prompt('Radio:');
+            if (tempRadius === null || tempRadius === "") {
+                drawingMode = null;
+                return;
+            }
+            radius = tempRadius;
+            let tempDirection = prompt('Dirección (izquierda, derecha, arriba, abajo):').toLowerCase();
+            if (tempDirection === null || tempDirection === "") {
+                drawingMode = null;
+                return;
+            }
+            direction = tempDirection;
+            drawingMode = 'semicircle';
+        }
+
+        function prepararCuartoCirculo() {
+            let tempRadius = prompt('Radio:');
+            if (tempRadius === null || tempRadius === "") {
+                drawingMode = null;
+                return;
+            }
+            radius = tempRadius;
+            let tempDirection = prompt('Dirección (sup-izq, sup-der, inf-izq, inf-der):').toLowerCase();
+            if (tempDirection === null || tempDirection === "") {
+                drawingMode = null;
+                return;
+            }
+            direction = tempDirection;
+            drawingMode = 'quartercircle';
+        }
+
+        function prepararCirculo() {
+            let tempRadius = prompt('Radio:');
+            if (tempRadius === null || tempRadius === "") {
+                drawingMode = null;
+                return;
+            }
+            radius = tempRadius;
+            drawingMode = 'circle';
+        }
+
+        function prepararRectangulo() {
+            drawingMode = 'rectangle';
+        }
+
+        function prepararCuadrado() {
+            drawingMode = 'square';
+        }
+
+        function exportToJPG() {
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            const tempCtx = tempCanvas.getContext('2d');
+
+            tempCtx.fillStyle = 'white';
+            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+            tempCtx.strokeStyle = 'black';
+            tempCtx.lineWidth = ctx.lineWidth;
+            drawShapes(tempCtx);
+            drawLines(tempCtx);
+
+            const dataURL = tempCanvas.toDataURL('image/jpeg');
+            const link = document.createElement('a');
+            link.download = 'figura.jpg';
+            link.href = dataURL;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function limpiarLienzo() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            lines = [];
+            shapes = [];
+            drawingMode = null;
+        }
+
+        function undo() {
+            if (lines.length > 0 || shapes.length > 0) {
+                if (shapes.length > 0) {
+                    shapes.pop();
+                } else if (lines.length > 0) {
+                    lines.pop();
+                }
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawShapes(ctx);
+                drawLines(ctx);
+            }
+        }
+    </script>
+</body>
+</html>
+
