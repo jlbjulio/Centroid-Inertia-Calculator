@@ -4,12 +4,6 @@ Fecha de entrega : 6/19/2024
 
 Por Arreglar: 
 
-- Arreglar que los calculos de centroide, area etc sea independiente a cada pestaña
-- Arreglar Dropdown que rectangulo desaparece cuando se cambia de opcion
-- Arreglar no se puede dibujar afuera del rectangulo delimitador
+unir con django o flask, el html con el codigo python
 
-Agregar
-
-- Unir figuras geometricas para que sea vea mejor visualmente
-- Agregar Mas formas o quitar eso y meter una pagina web donde se puedan crear mejor
-  
+La idea es que se descargue la imagen, en el mismo HTML dar la opcion de subir la imagen y de esa imagen subida se calcula el momento de inercia y centroide con opencv.
