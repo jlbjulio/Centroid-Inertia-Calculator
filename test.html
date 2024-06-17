@@ -201,9 +201,13 @@
                     ctx.rect(shape.x, shape.y, shape.sideLength, shape.sideLength);
                 }
                 if (shape.isHollow) {
+                    ctx.fillStyle = 'white'; // Relleno blanco
+                    ctx.fill();
                     ctx.stroke();
                 } else {
+                    ctx.fillStyle = 'black'; // Relleno blanco
                     ctx.fill();
+                    ctx.stroke();
                 }
             });
         }
@@ -385,16 +389,15 @@
             tempCanvas.height = canvas.height;
             const tempCtx = tempCanvas.getContext('2d');
         
-            // Limpiar canvas temporal
+            // Limpiar y establecer fondo blanco en el canvas temporal
             tempCtx.fillStyle = 'white';
             tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
         
-            // Dibujar formas y líneas
+            // Dibujar todas las figuras en el canvas temporal
             tempCtx.strokeStyle = 'black';
-            tempCtx.fillStyle = 'black'; // Color para relleno (si es necesario)
             tempCtx.lineWidth = ctx.lineWidth;
         
-            // Dibujar formas sólidas y huecas
+            // Dibujar formas
             shapes.forEach(shape => {
                 tempCtx.beginPath();
                 if (shape.type === 'semicircle') {
@@ -409,13 +412,17 @@
                     tempCtx.rect(shape.x, shape.y, shape.sideLength, shape.sideLength);
                 }
                 if (shape.isHollow) {
+                    tempCtx.fillStyle = 'white'; // Relleno negro para huecas
+                    tempCtx.fill();
                     tempCtx.stroke();
                 } else {
+                    tempCtx.fillStyle = 'black'; // Relleno negro para formas sólidas
                     tempCtx.fill();
+                    tempCtx.stroke();
                 }
             });
         
-            // Dibujar líneas
+            // Dibujar líneas en el canvas temporal
             drawLines(tempCtx);
         
             // Exportar como JPEG
@@ -428,6 +435,9 @@
             link.click();
             document.body.removeChild(link);
         }
+        
+        
+        
         
         function limpiarLienzo() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
