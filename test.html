@@ -56,7 +56,7 @@
     <br>
     <div>
         <input type="checkbox" id="isHollow" checked>
-        <label for="isHollow" id="labelIsHollow">Forma No Hueca</label>
+        <label for="isHollow" id="labelIsHollow">Forma Hueca</label>
         <button onclick="iniciarLinea()">Dibujar Línea</button>
         <button onclick="prepararSemicirculo()">Dibujar Semicírculo</button>
         <button onclick="prepararCuartoCirculo()">Dibujar 1/4 de Círculo</button>
@@ -255,14 +255,14 @@
             ctx.arc(x, y, radius, startAngle, endAngle);
         }
 
-        function drawSemiCirclePreview(ctx, x, y, radius, direction) {
+        function drawSemiCircle(ctx, x, y, radius, direction) {
             let startAngle, endAngle;
             switch (direction) {
                 case 'izquierda':
                     startAngle = 0.5 * Math.PI;
                     endAngle = 1.5 * Math.PI;
                     break;
-                    case 'derecha':
+                case 'derecha':
                     startAngle = 1.5 * Math.PI;
                     endAngle = 0.5 * Math.PI;
                     break;
@@ -272,12 +272,15 @@
                     break;
                 case 'abajo':
                     startAngle = Math.PI;
-                    endAngle = 2 * Math.PI;
+                    endAngle = 0;
                     break;
             }
+            ctx.beginPath();
             ctx.arc(x, y, radius, startAngle, endAngle);
+            ctx.closePath(); // Cierra el contorno del semicírculo
         }
-
+        
+        
         function drawQuarterCircle(ctx, x, y, radius, direction) {
             let startAngle, endAngle;
             switch (direction) {
@@ -298,8 +301,13 @@
                     endAngle = 2 * Math.PI;
                     break;
             }
+            ctx.beginPath();
             ctx.arc(x, y, radius, startAngle, endAngle);
+            ctx.lineTo(x, y); // Conectar con el centro del círculo
+            ctx.closePath(); // Cierra el contorno del cuarto de círculo
         }
+        
+        
 
         function drawSemiCirclePreview(ctx, x, y, radius, direction) {
             drawSemiCircle(ctx, x, y, radius, direction);
