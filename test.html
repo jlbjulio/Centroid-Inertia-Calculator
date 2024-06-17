@@ -24,6 +24,10 @@
             background-color: white;
         }
 
+        #labelIsHollow {
+            color: #ff6347; /* Naranja */
+        }
+
         h1 {
             color: white;
             text-align: center;
@@ -46,6 +50,8 @@
     <canvas id="canvas" width="800" height="600"></canvas>
     <br>
     <div>
+        <input type="checkbox" id="isHollow" checked>
+        <label for="isHollow" id="labelIsHollow">Forma No Hueca</label>
         <button onclick="iniciarLinea()">Dibujar Línea</button>
         <button onclick="prepararSemicirculo()">Dibujar Semicírculo</button>
         <button onclick="prepararCuartoCirculo()">Dibujar 1/4 de Círculo</button>
@@ -69,10 +75,15 @@
         let drawingMode = null;
         let radius = 0;
         let direction = '';
+        let isHollow = true;
 
         canvas.addEventListener('mousedown', startDrawing);
         canvas.addEventListener('mousemove', draw);
         canvas.addEventListener('mouseup', stopDrawing);
+
+        document.getElementById('isHollow').addEventListener('change', function() {
+            isHollow = this.checked;
+        });
 
         function startDrawing(e) {
             isDrawing = true;
@@ -125,24 +136,23 @@
             if (drawingMode === 'line') {
                 lines.push({ start: { x: startX, y: startY }, end: { x: endX, y: endY } });
             } else if (drawingMode === 'semicircle') {
-                shapes.push({ type: 'semicircle', x: startX, y: startY, radius: radius, direction: direction });
+                shapes.push({ type: 'semicircle', x: startX, y: startY, radius: radius, direction: direction, isHollow: isHollow });
             } else if (drawingMode === 'quartercircle') {
-                shapes.push({ type: 'quartercircle', x: startX, y: startY, radius: radius, direction: direction });
+                shapes.push({ type: 'quartercircle', x: startX, y: startY, radius: radius, direction: direction, isHollow: isHollow });
             } else if (drawingMode === 'circle') {
-                shapes.push({ type: 'circle', x: startX, y: startY, radius: radius });
+                shapes.push({ type: 'circle', x: startX, y: startY, radius: radius, isHollow: isHollow });
             } else if (drawingMode === 'rectangle') {
                 let width = endX - startX;
                 let height = endY - startY;
-                shapes.push({ type: 'rectangle', x: startX, y: startY, width: width, height: height });
+                shapes.push({ type: 'rectangle', x: startX, y: startY, width: width, height: height, isHollow: isHollow });
             } else if (drawingMode === 'square') {
                 let sideLength = Math.max(Math.abs(endX - startX), Math.abs(endY - startY));
-                shapes.push({ type: 'square', x: startX, y: startY, sideLength: sideLength });
+                shapes.push({ type: 'square', x: startX, y: startY, sideLength: sideLength, isHollow: isHollow });
             }
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawShapes(ctx);
             drawLines(ctx);
         }
-
 
         function drawLines(ctx) {
             ctx.beginPath();
@@ -152,7 +162,7 @@
             });
             ctx.stroke();
         }
-
+        
         function drawShapes(ctx) {
             shapes.forEach(shape => {
                 ctx.beginPath();
@@ -167,9 +177,14 @@
                 } else if (shape.type === 'square') {
                     ctx.rect(shape.x, shape.y, shape.sideLength, shape.sideLength);
                 }
-                ctx.stroke();
+                if (shape.isHollow) {
+                    ctx.stroke();
+                } else {
+                    ctx.fill();
+                }
             });
         }
+
 
         function drawSemiCircle(ctx, x, y, radius, direction) {
             let startAngle, endAngle;
@@ -338,15 +353,41 @@
             tempCanvas.width = canvas.width;
             tempCanvas.height = canvas.height;
             const tempCtx = tempCanvas.getContext('2d');
-
+        
+            // Limpiar canvas temporal
             tempCtx.fillStyle = 'white';
             tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-
+        
+            // Dibujar formas y líneas
             tempCtx.strokeStyle = 'black';
+            tempCtx.fillStyle = 'black'; // Color para relleno (si es necesario)
             tempCtx.lineWidth = ctx.lineWidth;
-            drawShapes(tempCtx);
+        
+            // Dibujar formas sólidas y huecas
+            shapes.forEach(shape => {
+                tempCtx.beginPath();
+                if (shape.type === 'semicircle') {
+                    drawSemiCircle(tempCtx, shape.x, shape.y, shape.radius, shape.direction);
+                } else if (shape.type === 'quartercircle') {
+                    drawQuarterCircle(tempCtx, shape.x, shape.y, shape.radius, shape.direction);
+                } else if (shape.type === 'circle') {
+                    tempCtx.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI);
+                } else if (shape.type === 'rectangle') {
+                    tempCtx.rect(shape.x, shape.y, shape.width, shape.height);
+                } else if (shape.type === 'square') {
+                    tempCtx.rect(shape.x, shape.y, shape.sideLength, shape.sideLength);
+                }
+                if (shape.isHollow) {
+                    tempCtx.stroke();
+                } else {
+                    tempCtx.fill();
+                }
+            });
+        
+            // Dibujar líneas
             drawLines(tempCtx);
-
+        
+            // Exportar como JPEG
             const dataURL = tempCanvas.toDataURL('image/jpeg');
             const link = document.createElement('a');
             link.download = 'figura.jpg';
@@ -356,12 +397,11 @@
             link.click();
             document.body.removeChild(link);
         }
-
+        
         function limpiarLienzo() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             lines = [];
             shapes = [];
-            drawingMode = null;
         }
 
         function undo() {
