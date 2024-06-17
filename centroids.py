@@ -6,6 +6,7 @@ import cv2
 ### Upload image
 
 name = "figura"
+### Cambiar nombre de usuario a de usuario
 filename = "C:\\Users\\julio\\Downloads\\" + name + ".jpg"
 img = cv2.imread(filename,cv2.IMREAD_GRAYSCALE) #Gray-scale figure
 img_c = cv2.imread(filename) # Color Figure
