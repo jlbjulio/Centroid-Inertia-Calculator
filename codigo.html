@@ -489,24 +489,24 @@
                         area = (Math.PI * Math.pow(parseFloat(shape.radius), 2)) / 2;
                         switch (shape.direction) {
                             case 'right':
-                                cx = parseFloat(shape.x) + parseFloat((4 * shape.radius / 3) * Math.PI);
+                                cx = parseFloat(shape.x) + parseFloat((4 * shape.radius / 3* Math.PI));
                                 cy = parseFloat(shape.y);
                                 break;
                             case 'down':
-                                cx = parseFloat(shape.x) + parseFloat((4 * shape.radius / 3) * Math.PI);
+                                cx = parseFloat(shape.x) + parseFloat((4 * shape.radius / 3* Math.PI));
                                 cy = parseFloat(shape.y);
                                 break;
                             case 'down':
-                                cx = parseFloat(shape.x) + parseFloat((4 * shape.radius / 3) * Math.PI);
+                                cx = parseFloat(shape.x) + parseFloat((4 * shape.radius / 3* Math.PI));
                                 cy = parseFloat(shape.y);
                                 break;
                             case 'left':
                                 cx = parseFloat(shape.x);
-                                cy = parseFloat(shape.y) + parseFloat((4 * shape.radius / 3) * Math.PI);
+                                cy = parseFloat(shape.y) + parseFloat((4 * shape.radius / 3* Math.PI));
                                 break;
                             case 'up':
                                 cx = parseFloat(shape.x);
-                                cy = parseFloat(shape.y) + parseFloat((4 * shape.radius / 3) * Math.PI);
+                                cy = parseFloat(shape.y) + parseFloat((4 * shape.radius / 3* Math.PI));
                                 break;
                             default:
                                 break;
@@ -516,8 +516,8 @@
                         break;
                     case 'quartercircle':
                         area = (Math.PI * Math.pow(parseFloat(shape.radius), 2)) / 4;
-                        cx = parseFloat(shape.x) + (4 * parseFloat(shape.radius) / 3*Math.PI);
-                        cy = parseFloat(shape.y) + (4 * parseFloat(shape.radius) / 3*Math.PI);
+                        cx = parseFloat(shape.x) + (parseFloat(4 * shape.radius / (3*Math.PI)));
+                        cy = parseFloat(shape.y) + (parseFloat(4 * shape.radius) / (3*Math.PI));
                         Ixx = (Math.PI * Math.pow(parseFloat(shape.radius), 4)) / 32;
                         Iyy = (Math.PI * Math.pow(parseFloat(shape.radius), 4)) / 32;
                         break;
