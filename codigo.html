@@ -85,6 +85,7 @@
     <br>
     <button onclick="drawFigure()">Dibujar Figura</button>
     <button onclick="clearCanvas()">Limpiar Plano</button>
+    <button onclick="removeLastShape()">Eliminar Última Figura</button>
     <button onclick="calculateProperties()">Calcular Centroide y Momento de Inercia</button>
     <canvas id="canvas"></canvas>
     <table id="resultsTable">
@@ -243,39 +244,40 @@
             ctx.beginPath();
             let startAngle, endAngle;
             switch (quadrant) {
-                case '1':
+                case '1': // Superior derecha
+                    startAngle = 0;
+                    endAngle = 0.5 * Math.PI;
+                    ctx.moveTo(x, canvas.height - y);
+                    ctx.lineTo(x, canvas.height - y - radius);
+                    ctx.arc(x, canvas.height - y, radius, 1.5 * Math.PI, 0);
+                    ctx.lineTo(x + radius, canvas.height - y);
+                    break;
+                case '2': // Superior izquierda
                     startAngle = 1.5 * Math.PI;
                     endAngle = 2 * Math.PI;
                     ctx.moveTo(x, canvas.height - y);
+                    ctx.lineTo(x - radius, canvas.height - y);
+                    ctx.arc(x, canvas.height - y, radius, Math.PI, 1.5 * Math.PI);
                     ctx.lineTo(x, canvas.height - y - radius);
-                    ctx.arc(x, canvas.height - y, radius, startAngle, endAngle);
-                    ctx.lineTo(x + radius, canvas.height - y);
                     break;
-                case '2':
+                case '3': // Inferior izquierda
                     startAngle = Math.PI;
                     endAngle = 1.5 * Math.PI;
                     ctx.moveTo(x, canvas.height - y);
                     ctx.lineTo(x - radius, canvas.height - y);
-                    ctx.arc(x, canvas.height - y, radius, startAngle, endAngle);
-                    ctx.lineTo(x, canvas.height - y - radius);
+                    ctx.arc(x, canvas.height - y, radius, 0.5 * Math.PI, Math.PI);
+                    ctx.lineTo(x, canvas.height - y + radius);
                     break;
-                case '3':
+                case '4': // Inferior derecha
                     startAngle = 0.5 * Math.PI;
                     endAngle = Math.PI;
                     ctx.moveTo(x, canvas.height - y);
-                    ctx.lineTo(x - radius, canvas.height - y);
-                    ctx.arc(x, canvas.height - y, radius, startAngle, endAngle);
                     ctx.lineTo(x, canvas.height - y + radius);
-                    break;
-                case '4':
-                    startAngle = 0;
-                    endAngle = 0.5 * Math.PI;
-                    ctx.moveTo(x, canvas.height - y);
-                    ctx.lineTo(x, canvas.height - y + radius);
-                    ctx.arc(x, canvas.height - y, radius, startAngle, endAngle);
+                    ctx.arc(x, canvas.height - y, radius, 0, 0.5 * Math.PI);
                     ctx.lineTo(x + radius, canvas.height - y);
                     break;
             }
+        
             ctx.closePath();
             ctx.lineWidth = 4;
             if (isHollow) {
@@ -284,10 +286,32 @@
                 ctx.save();
                 ctx.globalCompositeOperation = 'destination-out';
                 ctx.beginPath();
-                ctx.moveTo(x, canvas.height - y);
-                ctx.lineTo(x - radius, canvas.height - y);
-                ctx.arc(x, canvas.height - y, radius - 2, startAngle, endAngle);
-                ctx.lineTo(x + radius, canvas.height - y);
+                switch (quadrant) {
+                    case '1':
+                        ctx.moveTo(x, canvas.height - y);
+                        ctx.lineTo(x - radius, canvas.height - y);
+                        ctx.arc(x, canvas.height - y, radius - 2, 1.5 * Math.PI, 0);
+                        ctx.lineTo(x + radius, canvas.height - y);
+                        break;
+                    case '2':
+                        ctx.moveTo(x, canvas.height - y);
+                        ctx.lineTo(x, canvas.height - y - radius);
+                        ctx.arc(x, canvas.height - y, radius - 2, Math.PI, 1.5 * Math.PI);
+                        ctx.lineTo(x - radius, canvas.height - y);
+                        break;
+                    case '3':
+                        ctx.moveTo(x, canvas.height - y);
+                        ctx.lineTo(x + radius, canvas.height - y);
+                        ctx.arc(x, canvas.height - y, radius - 2, 0.5 * Math.PI, Math.PI);
+                        ctx.lineTo(x, canvas.height - y + radius);
+                        break;
+                    case '4':
+                        ctx.moveTo(x, canvas.height - y);
+                        ctx.lineTo(x, canvas.height - y + radius);
+                        ctx.arc(x, canvas.height - y, radius - 2, 0, 0.5 * Math.PI);
+                        ctx.lineTo(x + radius, canvas.height - y);
+                        break;
+                }
                 ctx.closePath();
                 ctx.fill();
                 ctx.restore();
@@ -296,6 +320,7 @@
                 ctx.fill();
             }
         }
+        
 
         function drawRectangle(x, y, length, width, isHollow) {
             ctx.beginPath();
@@ -462,17 +487,39 @@
                         break;
                     case 'semicircle':
                         area = (Math.PI * Math.pow(parseFloat(shape.radius), 2)) / 2;
-                        cx = parseFloat(shape.x);
-                        cy = parseFloat(shape.y) + parseFloat(shape.radius);
-                        Ixx = (Math.PI * Math.pow(parseFloat(shape.radius), 4)) / 8;
-                        Iyy = (Math.PI * Math.pow(parseFloat(shape.radius), 4)) / 16;
+                        switch (shape.direction) {
+                            case 'right':
+                                cx = parseFloat(shape.x) + parseFloat((4 * shape.radius / 3) * Math.PI);
+                                cy = parseFloat(shape.y);
+                                break;
+                            case 'down':
+                                cx = parseFloat(shape.x) + parseFloat((4 * shape.radius / 3) * Math.PI);
+                                cy = parseFloat(shape.y);
+                                break;
+                            case 'down':
+                                cx = parseFloat(shape.x) + parseFloat((4 * shape.radius / 3) * Math.PI);
+                                cy = parseFloat(shape.y);
+                                break;
+                            case 'left':
+                                cx = parseFloat(shape.x);
+                                cy = parseFloat(shape.y) + parseFloat((4 * shape.radius / 3) * Math.PI);
+                                break;
+                            case 'up':
+                                cx = parseFloat(shape.x);
+                                cy = parseFloat(shape.y) + parseFloat((4 * shape.radius / 3) * Math.PI);
+                                break;
+                            default:
+                                break;
+                        }                        
+                        Ixx = (Math.PI * Math.pow(parseFloat(shape.radius), 4)) / 16;
+                        Iyy = (Math.PI * Math.pow(parseFloat(shape.radius), 4)) / 8;
                         break;
                     case 'quartercircle':
                         area = (Math.PI * Math.pow(parseFloat(shape.radius), 2)) / 4;
-                        cx = parseFloat(shape.x) + (2 * parseFloat(shape.radius) / Math.PI);
-                        cy = parseFloat(shape.y) + (2 * parseFloat(shape.radius) / Math.PI);
+                        cx = parseFloat(shape.x) + (4 * parseFloat(shape.radius) / 3*Math.PI);
+                        cy = parseFloat(shape.y) + (4 * parseFloat(shape.radius) / 3*Math.PI);
                         Ixx = (Math.PI * Math.pow(parseFloat(shape.radius), 4)) / 32;
-                        Iyy = (Math.PI * Math.pow(parseFloat(shape.radius), 4)) / 16;
+                        Iyy = (Math.PI * Math.pow(parseFloat(shape.radius), 4)) / 32;
                         break;
                     case 'rectangle':
                         area = parseFloat(shape.length) * parseFloat(shape.width);
@@ -499,8 +546,8 @@
                 totalArea += area;
                 totalCx += cx * area;
                 totalCy += cy * area;
-                totalIxxAboutCentroid += Ixx + area * Math.pow(cx - shape.x, 2);
-                totalIyyAboutCentroid += Iyy + area * Math.pow(cy - shape.y, 2);
+                totalIxxAboutCentroid += Ixx + area * Math.pow(shape.x - cx, 2);
+                totalIyyAboutCentroid += Iyy + area * Math.pow(shape.y - cy, 2);
         
                 const row = tbody.insertRow();
                 row.insertCell(0).innerText = shape.type;
@@ -516,43 +563,9 @@
         
             let totalIxx = 0;
             let totalIyy = 0;
-        
-            shapes.forEach(shape => {
-                let area = 0;
-                let cx = 0;
-                let cy = 0;
-        
-                switch (shape.type) {
-                    case 'circle':
-                        area = Math.PI * Math.pow(parseFloat(shape.radius), 2);
-                        cx = parseFloat(shape.x);
-                        cy = parseFloat(shape.y);
-                        break;
-                    case 'semicircle':
-                        area = (Math.PI * Math.pow(parseFloat(shape.radius), 2)) / 2;
-                        cx = parseFloat(shape.x);
-                        cy = parseFloat(shape.y) + parseFloat(shape.radius);
-                        break;
-                    case 'quartercircle':
-                        area = (Math.PI * Math.pow(parseFloat(shape.radius), 2)) / 4;
-                        cx = parseFloat(shape.x) + (2 * parseFloat(shape.radius) / Math.PI);
-                        cy = parseFloat(shape.y) + (2 * parseFloat(shape.radius) / Math.PI);
-                        break;
-                    case 'rectangle':
-                        area = parseFloat(shape.length) * parseFloat(shape.width);
-                        cx = parseFloat(shape.x) + (parseFloat(shape.length) / 2);
-                        cy = parseFloat(shape.y) + (parseFloat(shape.width) / 2);
-                        break;
-                    case 'triangle':
-                        area = (parseFloat(shape.base) * parseFloat(shape.height)) / 2;
-                        cx = parseFloat(shape.x) + parseFloat(shape.base) / 2;
-                        cy = parseFloat(shape.y) + parseFloat(shape.height) / 3;
-                        break;
-                }
-        
-                totalIxx += totalIxxAboutCentroid + area * Math.pow(cx - centroidX, 2);
-                totalIyy += totalIyyAboutCentroid + area * Math.pow(cy - centroidY, 2);
-            });
+            totalIxx += totalIxxAboutCentroid;
+            totalIyy += totalIyyAboutCentroid;
+            
         
             ctx.beginPath();
             ctx.arc(centroidX * (canvas.width / maxX), canvas.height - centroidY * (canvas.height / maxY), 5, 0, 2 * Math.PI);
@@ -585,6 +598,14 @@
         document.getElementById('figureType').addEventListener('change', updateInputFields);
         document.getElementById('maxX').addEventListener('input', updateCanvasSize);
         document.getElementById('maxY').addEventListener('input', updateCanvasSize);
+
+        function removeLastShape() {
+            if (shapes.length > 0) {
+                shapes.pop();
+                drawShapes();
+            }
+        }
+
         updateCanvasSize();
         updateInputFields();
     </script>
