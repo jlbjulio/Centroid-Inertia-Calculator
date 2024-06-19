@@ -344,8 +344,8 @@
         function drawTriangle(x, y, base, height, isHollow) {
             ctx.beginPath();
             ctx.moveTo(x, canvas.height - y);
-            ctx.lineTo(x - base / 2, canvas.height - y - height);
-            ctx.lineTo(x + base / 2, canvas.height - y - height);
+            ctx.lineTo(x - base / 2, canvas.height - (y - height));
+            ctx.lineTo(x + base / 2, canvas.height - (y - height));
             ctx.closePath();
             ctx.lineWidth = 4;
             if (isHollow) {
@@ -355,8 +355,8 @@
                 ctx.globalCompositeOperation = 'destination-out';
                 ctx.beginPath();
                 ctx.moveTo(x, canvas.height - y + 2);
-                ctx.lineTo(x - base / 2 + 2, canvas.height - y - height + 2);
-                ctx.lineTo(x + base / 2 - 2, canvas.height - y - height + 2);
+                ctx.lineTo(x - base / 2 + 2, canvas.height - (y - height + 2));
+                ctx.lineTo(x + base / 2 - 2, canvas.height - (y - height + 2));
                 ctx.closePath();
                 ctx.fill();
                 ctx.restore();
@@ -493,16 +493,12 @@
                                 cy = parseFloat(shape.y);
                                 break;
                             case 'down':
-                                cx = parseFloat(shape.x) + parseFloat((4 * shape.radius / 3* Math.PI));
-                                cy = parseFloat(shape.y);
-                                break;
-                            case 'down':
-                                cx = parseFloat(shape.x) + parseFloat((4 * shape.radius / 3* Math.PI));
-                                cy = parseFloat(shape.y);
-                                break;
-                            case 'left':
                                 cx = parseFloat(shape.x);
                                 cy = parseFloat(shape.y) + parseFloat((4 * shape.radius / 3* Math.PI));
+                                break;
+                            case 'left':
+                                cx = parseFloat(shape.x) + parseFloat((4 * shape.radius / 3* Math.PI));
+                                cy = parseFloat(shape.y);
                                 break;
                             case 'up':
                                 cx = parseFloat(shape.x);
