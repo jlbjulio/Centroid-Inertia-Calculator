@@ -85,9 +85,9 @@
     <button onclick="removeLastShape()">Eliminar Última Figura</button>
     <br>
     <label for="refX">Punto de referencia X:</label>
-    <input type="number" id="refX" min="0" value="0">
+    <input type="number" id="refX" min="0">
     <label for="refY">Punto de referencia Y:</label>
-    <input type="number" id="refY" min="0" value="0">
+    <input type="number" id="refY" min="0">
     <br>
     <button onclick="calculateProperties()">Calcular Centroide y Momento de Inercia</button>
     <canvas id="canvas"></canvas>
@@ -546,65 +546,71 @@
         }
 
         function calculateProperties() {
-        const refX = parseFloat(document.getElementById('refX').value) || 0;
-        const refY = parseFloat(document.getElementById('refY').value) || 0;
+            const refX = parseFloat(document.getElementById('refX').value);
+            const refY = parseFloat(document.getElementById('refY').value);
+            
+            let totalArea = 0;
+            let totalCx = 0;
+            let totalCy = 0;
+            let totalIxx = 0;
+            let totalIyy = 0;
+            let hasReferencePoint = !isNaN(refX) && !isNaN(refY);
         
-
-        let totalArea = 0;
-        let totalCx = 0;
-        let totalCy = 0;
-        let totalIxx = 0;
-        let totalIyy = 0;
-
-        const shapeProperties = shapes.map(shape => {
-            const props = calculateShapeProperties(shape);
-            totalArea += props.area;
-            totalCx += props.cx * props.area;
-            totalCy += props.cy * props.area;
-            return props;
-        });
-
-        const centroidX = totalArea !== 0 ? totalCx / totalArea : 0;
-        const centroidY = totalArea !== 0 ? totalCy / totalArea : 0;
-
-        shapeProperties.forEach(props => {
-            const dx = props.cx - refX;
-            const dy = props.cy - refY;
-            totalIxx += props.Ixx + Math.abs(props.area) * Math.pow(dy, 2);
-            totalIyy += props.Iyy + Math.abs(props.area) * Math.pow(dx, 2);
-        });
-
-        displayResults(shapeProperties, {
-            totalArea,
-            centroidX,
-            centroidY,
-            totalIxx,
-            totalIyy
-        });
-
-        const canvasX = centroidX * (canvas.width / maxX);
-        const canvasY = canvas.height - centroidY * (canvas.height / maxY);
-        const refCanvasX = refX * (canvas.width / maxX);
-        const refCanvasY = canvas.height - refY * (canvas.height / maxY);
-
-        ctx.beginPath();
-        ctx.arc(canvasX, canvasY, 5, 0, 2 * Math.PI);
-        ctx.fillStyle = 'red';
-        ctx.fill();
+            const shapeProperties = shapes.map(shape => {
+                const props = calculateShapeProperties(shape);
+                totalArea += props.area;
+                totalCx += props.cx * props.area;
+                totalCy += props.cy * props.area;
+                return props;
+            });
         
-            // Dibujar el punto de referencia
-        ctx.beginPath();
-        ctx.arc(refCanvasX, refCanvasY, 5, 0, 2 * Math.PI);
-        ctx.fillStyle = 'green';
-        ctx.fill();
+            const centroidX = totalArea !== 0 ? totalCx / totalArea : 0;
+            const centroidY = totalArea !== 0 ? totalCy / totalArea : 0;
         
-            // Etiquetas
-        ctx.font = '12px Arial';
-        ctx.fillStyle = 'black';
-        ctx.fillText('Centroide', canvasX + 10, canvasY);''
-        ctx.fillText('Referencia ' + ReferenciaCount, refCanvasX + 10, refCanvasY);
-        ReferenciaCount++;
-    }
+            if (hasReferencePoint) {
+                shapeProperties.forEach(props => {
+                    const dx = props.cx - refX; 
+                    const dy = props.cy - refY;
+                    totalIxx += props.Ixx + Math.abs(props.area) * Math.pow(dy, 2);
+                    totalIyy += props.Iyy + Math.abs(props.area) * Math.pow(dx, 2);
+                });
+            }
+        
+            displayResults(shapeProperties, {
+                totalArea,
+                centroidX,
+                centroidY,
+                totalIxx: hasReferencePoint ? totalIxx : "No hay punto de referencia",
+                totalIyy: hasReferencePoint ? totalIyy : "No hay punto de referencia"
+            });
+        
+            const canvasX = centroidX * (canvas.width / maxX);
+            const canvasY = canvas.height - centroidY * (canvas.height / maxY);
+        
+            ctx.beginPath();
+            ctx.arc(canvasX, canvasY, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = 'red';
+            ctx.fill();
+            
+            if (hasReferencePoint) {
+                const refCanvasX = refX * (canvas.width / maxX);
+                const refCanvasY = canvas.height - refY * (canvas.height / maxY);
+                
+                ctx.beginPath();
+                ctx.arc(refCanvasX, refCanvasY, 5, 0, 2 * Math.PI);
+                ctx.fillStyle = 'green';
+                ctx.fill();
+                
+                ctx.font = '12px Arial';
+                ctx.fillStyle = 'black';
+                ctx.fillText('Referencia ' + ReferenciaCount, refCanvasX + 10, refCanvasY);
+                ReferenciaCount++;
+            }
+            
+            ctx.font = '12px Arial';
+            ctx.fillStyle = 'black';
+            ctx.fillText('Centroide', canvasX + 10, canvasY);
+        }
         
         
         function displayResults(shapeProperties, totals) {
@@ -617,8 +623,8 @@
                 row.insertCell(1).innerText = props.area.toFixed(2);
                 row.insertCell(2).innerText = props.cx.toFixed(2);
                 row.insertCell(3).innerText = props.cy.toFixed(2);
-                row.insertCell(4).innerText = props.Ixx.toFixed(2);
-                row.insertCell(5).innerText = props.Iyy.toFixed(2);
+                row.insertCell(4).innerText = typeof props.Ixx === 'number' ? props.Ixx.toFixed(2) : props.Ixx;
+                row.insertCell(5).innerText = typeof props.Iyy === 'number' ? props.Iyy.toFixed(2) : props.Iyy;
             });
         
             const totalRow = tbody.insertRow();
@@ -626,9 +632,10 @@
             totalRow.insertCell(1).innerText = totals.totalArea.toFixed(2);
             totalRow.insertCell(2).innerText = totals.centroidX.toFixed(2);
             totalRow.insertCell(3).innerText = totals.centroidY.toFixed(2);
-            totalRow.insertCell(4).innerText = totals.totalIxx.toFixed(2);
-            totalRow.insertCell(5).innerText = totals.totalIyy.toFixed(2);
+            totalRow.insertCell(4).innerText = typeof totals.totalIxx === 'number' ? totals.totalIxx.toFixed(2) : totals.totalIxx;
+            totalRow.insertCell(5).innerText = typeof totals.totalIyy === 'number' ? totals.totalIyy.toFixed(2) : totals.totalIyy;
         }
+
         function removeLastShape() {
             if (shapes.length > 0) {
                 shapes.pop();
