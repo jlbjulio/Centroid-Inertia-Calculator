@@ -59,4 +59,4 @@ Este proyecto es una aplicación web diseñada para calcular el centroide y el m
 
 ## Autor
 
-Julio Lara – Proyecto académico para la materia de Herramientas de Programación 4.
+Este repositorio fue desarrollado como parte del curso **Mecanica**, por **Julio Lara** de la carrera de Ingeniería en Sistemas/Tecnología de la Universidad Tecnológica de Panamá (UTP).
