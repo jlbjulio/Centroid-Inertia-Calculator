@@ -1,6 +1,5 @@
 # Final Project – Analisis de datos y toma de decisiones
 
-Final Project for the course *Analisis de datos y toma de decisiones*
 
 **Data Analysis of UR3 CobotOps**
 
