@@ -1,117 +1,63 @@
-# Final Project – Analisis de datos y toma de decisiones
+# Centroid and Moment of Inertia Calculator
 
+This project is a web application designed to calculate the centroid and moment of inertia of systems composed of multiple geometric shapes. It allows the user to add different shapes, define their characteristics, and visualize the results both graphically and numerically.
 
-**Data Analysis of UR3 CobotOps**
+## Technologies Used
 
-This project focuses on clustering analysis of the UR3 CobotOps dataset. The dataset includes multidimensional time series data from the UR3 cobot, providing information on operational parameters and failures for machine learning in robotics and automation.
+- HTML  
+- CSS  
+- JavaScript (no frameworks)  
+- Canvas for drawing on the Cartesian plane
 
-The project employs clustering techniques to analyze the UR3 CobotOps dataset. The main methodology includes:
+## Main Features
 
-- Data preprocessing: handling missing values, data normalization, and encoding categorical variables.
-- Clustering: applying various clustering algorithms to identify patterns and anomalies.
-- Visualization: creating visualizations to interpret clustering results.
+- **Selection of basic geometric shapes**:
+  - Circle  
+  - Semicircle  
+  - Quarter circle  
+  - Rectangle  
+  - Equilateral triangle  
+  - Right triangle
 
-The parameters in the UR3 CobotOps dataset are directly related to the cobot’s operation and performance.
+- **Customization of parameters**:
+  - Dimensions (radius, base, height, etc.)  
+  - Position on the X and Y axes  
+  - Direction or quadrant (for shapes like semicircles and quarter circles)  
+  - Type of shape (solid or hollow)
 
-1. **Electrical Currents**:
-   - Indicate the energy consumption of the motors at each joint.
-   - Can help detect irregularities or inefficiencies in movement.
+- **System configuration**:
+  - Definition of Cartesian plane boundaries  
+  - Choice of axis for moment of inertia calculation (centroid or bottom-left corner)
 
-2. **Temperatures**:
-   - Monitor the thermal condition of motors and components.
-   - Crucial to prevent overheating and ensure optimal performance.
+- **Additional features**:
+  - Automatic drawing on the plane, scaled accordingly  
+  - Ability to add multiple shapes, delete individual shapes, or clear the entire system  
+  - Visualization of the total centroid of the composed system  
+  - Calculation of total area, composite centroid, and total moment of inertia with respect to the selected axis
 
-3. **Joint Speeds (J0–J5)**:
-   - Represent the movement of each of the six joints.
-   - Important for analyzing movement patterns and efficiency.
+## How to Use
 
-4. **Gripper Current**:
-   - Related to the energy used by the end-effector (gripper).
-   - Can indicate gripping force and interaction with objects.
+1. Open the `index.html` file in any modern browser.  
+2. Set the maximum X and Y values to define the size of the plane.  
+3. Select a shape and fill in the required fields.  
+4. Click the “Draw Shape” button to add it to the system.  
+5. Repeat the process to add more shapes if desired.  
+6. Enter the reference point and select the axis for the moment of inertia calculation.  
+7. Click “Calculate Centroid and Moment of Inertia” to display the results.
 
-5. **Operation Cycle Count**:
-   - Records how many times the cobot has performed its programmed tasks.
-   - Useful for scheduling maintenance and analyzing life cycle.
+## Considerations
 
-6. **Protective Stops**:
-   - Log when safety features of the cobot are activated.
-   - Critical to ensure safe operation around humans.
+- Units are relative to the system defined by the user.  
+- Hollow shapes subtract their contribution from the total centroid and moment of inertia.  
+- The Cartesian plane is dynamically generated based on the user-defined X and Y values.
 
-7. **Grip Losses**:
-   - Indicate instances when the gripper failed to hold an object.
-   - Important for quality control and task success rate analysis.
+## Possible Improvements
 
-These parameters collectively provide a comprehensive view of the cobot’s operational status, performance, and potential issues. They are crucial for:
-- Performance optimization  
-- Predictive maintenance  
-- Safety monitoring  
-- Quality control in industrial processes  
+- Add new geometric shapes  
+- Enable exporting results to PDF or CSV  
+- Improve UI with external libraries  
+- Save and load previous configurations
 
----
+## Author
 
-### Temperatures J0, J1, J2, J3, J4, J5:
-
-- These are the temperatures of each of the six joints of the cobot.
-- J0 to J5 represent the six robot joints, from the base to the end-effector.
-- Measuring the temperature of each joint is crucial to detect overheating and prevent damage.
-
-### Speed J0, J1, J2, J3, J4, J5:
-
-- These are the rotational speeds of each joint.
-- Indicate how fast each joint is moving at a given time.
-- Important for analyzing motion dynamics and operational efficiency.
-
-### Current J0, J1, J2, J3, J4, J5:
-
-- Refers to the electrical current consumed by each joint’s motor.
-- Provides insight into how much effort each motor is exerting.
-- Useful for detecting anomalies in energy consumption or potential mechanical faults.
-
----
-
-### In the UR3 cobot, typically:
-
-- J0: Rotating base  
-- J1: "Shoulder" – first main joint  
-- J2: "Elbow" – second main joint  
-- J3: First "wrist" joint  
-- J4: Second "wrist" joint – usually allows rotation  
-- J5: Third "wrist" joint – typically allows final effector rotation  
-
----
-
-## Clustering Graphs (K-Means, Hierarchical, and DBSCAN)
-
-- **X-axis**: PCA Component 1  
-- **Y-axis**: PCA Component 2  
-
-**Interpretation**: These values do not represent "better" or "worse" outcomes. They are simply coordinates in a 2D space that represent the two main features extracted from the original data. Points that are closer together in this space are more similar in the original dataset.
-
----
-
-## Elbow Method Plot
-
-- **X-axis**: Number of clusters  
-- **Y-axis**: SSE (Sum of Squared Errors)  
-
-**Interpretation**: Lower SSE values are generally better, as they indicate lower variation within clusters. However, the goal is to find an "elbow" in the curve, where increasing the number of clusters no longer significantly reduces SSE. This inflection point suggests the optimal number of clusters.
-
----
-
-## DBSCAN K-Distance Graph
-
-- **X-axis**: Data points ordered by distance  
-- **Y-axis**: Epsilon (distance)  
-
-**Interpretation**: There is no "best" value here. The goal is to identify a "knee" in the curve, similar to the elbow method. This knee suggests a good value for the epsilon parameter in DBSCAN, which defines the maximum distance between two samples for them to be considered neighbors.
-
----
-
-## Time Series Plot
-
-- **X-axis**: Index (time)  
-- **Y-axis**: Variable value (temperature or current)  
-
-**Interpretation**:  
-- For **temperatures**: Lower values are generally better, as high temperatures may indicate overheating or inefficiency.  
-- For **currents**: Interpretation depends on the robot's context. Consistent values within the expected range are typically better. Peaks or very high values may indicate an issue.
+This repository was developed as part of the **Mecánica** course by **Julio Lara**, from the **Ingeniería en Sistemas/Tecnología** program at the **Universidad Tecnológica de Panamá (UTP)**.
