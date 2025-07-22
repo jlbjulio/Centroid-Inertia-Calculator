@@ -61,3 +61,8 @@ This project is a web application designed to calculate the centroid and moment 
 ## Author
 
 This repository was developed as part of the **Mecánica** course by **Julio Lara**, from the **Ingeniería en Sistemas/Tecnología** program at the **Universidad Tecnológica de Panamá (UTP)**.
+
+---
+
+> **Note**: This project was originally developed in Spanish. The README is written in English for documentation and sharing purposes.
+
