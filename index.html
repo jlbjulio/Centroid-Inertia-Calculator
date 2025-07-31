@@ -543,26 +543,30 @@
                         case 'up':
                             cx = parseFloat(shape.x);
                             cy = parseFloat(shape.y) + centroidDistance;
-                            Ixx = (Math.PI * Math.pow(sr, 4)) / 16;  // Semicírculo vertical
-                            Iyy = (Math.PI * Math.pow(sr, 4)) / 8;
+                            // Semicírculo vertical - más ancho en X que en Y
+                            Ixx = (Math.PI * Math.pow(sr, 4)) / 16;  // Menor inercia en X
+                            Iyy = (Math.PI * Math.pow(sr, 4)) / 8;   // Mayor inercia en Y
                             break;
                         case 'down':
                             cx = parseFloat(shape.x);
                             cy = parseFloat(shape.y) - centroidDistance;
-                            Ixx = (Math.PI * Math.pow(sr, 4)) / 16;  // Semicírculo vertical
-                            Iyy = (Math.PI * Math.pow(sr, 4)) / 8;
+                            // Semicírculo vertical - más ancho en X que en Y
+                            Ixx = (Math.PI * Math.pow(sr, 4)) / 16;  // Menor inercia en X
+                            Iyy = (Math.PI * Math.pow(sr, 4)) / 8;   // Mayor inercia en Y
                             break;
                         case 'left':
                             cx = parseFloat(shape.x) - centroidDistance;
                             cy = parseFloat(shape.y);
-                            Ixx = (Math.PI * Math.pow(sr, 4)) / 8;   // Semicírculo horizontal
-                            Iyy = (Math.PI * Math.pow(sr, 4)) / 16;
+                            // Semicírculo horizontal - más alto en Y que ancho en X
+                            Ixx = (Math.PI * Math.pow(sr, 4)) / 8;   // Mayor inercia en X
+                            Iyy = (Math.PI * Math.pow(sr, 4)) / 16;  // Menor inercia en Y
                             break;
                         case 'right':
                             cx = parseFloat(shape.x) + centroidDistance;
                             cy = parseFloat(shape.y);
-                            Ixx = (Math.PI * Math.pow(sr, 4)) / 8;   // Semicírculo horizontal
-                            Iyy = (Math.PI * Math.pow(sr, 4)) / 16;
+                            // Semicírculo horizontal - más alto en Y que ancho en X
+                            Ixx = (Math.PI * Math.pow(sr, 4)) / 8;   // Mayor inercia en X
+                            Iyy = (Math.PI * Math.pow(sr, 4)) / 16;  // Menor inercia en Y
                             break;
                     }
                     break;
