@@ -2,6 +2,8 @@
 
 This project is a web application designed to calculate the centroid and moment of inertia of systems composed of multiple geometric shapes. It allows the user to add different shapes, define their characteristics, and visualize the results both graphically and numerically.
 
+Link to view the project: [Centroid and Moment of Inertia Calculator](https://jlbjulio.github.io/Centroid-Inertia-Calculator)
+
 ## Technologies Used
 
 - HTML  
