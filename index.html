@@ -543,23 +543,28 @@
                         case 'up':
                             cx = parseFloat(shape.x);
                             cy = parseFloat(shape.y) + centroidDistance;
+                            Ixx = (Math.PI * Math.pow(sr, 4)) / 16;  // Semicírculo vertical
+                            Iyy = (Math.PI * Math.pow(sr, 4)) / 8;
                             break;
                         case 'down':
                             cx = parseFloat(shape.x);
                             cy = parseFloat(shape.y) - centroidDistance;
+                            Ixx = (Math.PI * Math.pow(sr, 4)) / 16;  // Semicírculo vertical
+                            Iyy = (Math.PI * Math.pow(sr, 4)) / 8;
                             break;
                         case 'left':
                             cx = parseFloat(shape.x) - centroidDistance;
                             cy = parseFloat(shape.y);
+                            Ixx = (Math.PI * Math.pow(sr, 4)) / 8;   // Semicírculo horizontal
+                            Iyy = (Math.PI * Math.pow(sr, 4)) / 16;
                             break;
                         case 'right':
                             cx = parseFloat(shape.x) + centroidDistance;
                             cy = parseFloat(shape.y);
+                            Ixx = (Math.PI * Math.pow(sr, 4)) / 8;   // Semicírculo horizontal
+                            Iyy = (Math.PI * Math.pow(sr, 4)) / 16;
                             break;
                     }
-                    
-                    Ixx = (Math.PI * Math.pow(sr, 4)) / 16;
-                    Iyy = (Math.PI * Math.pow(sr, 4)) / 8;
                     break;
 
                 case 'righttriangle':
