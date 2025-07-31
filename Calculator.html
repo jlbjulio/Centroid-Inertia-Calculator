@@ -5,7 +5,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-image: url('https://c4.wallpaperflare.com/wallpaper/1010/694/552/technics-gear-tooth-mechanism-wallpaper-preview.jpg');
+            background-image: url('fondo.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -62,25 +62,25 @@
 </head>
 <body>
     <h1>Calculadora de Centroide y Momento de Inercia</h1>
-    <label for="maxX">Valor maximo de X:</label>
+    <label for="maxX">Valor máximo de X:</label>
     <input type="number" id="maxX" min="1" value="10">
-    <label for="maxY">Valor maximo de Y:</label>
+    <label for="maxY">Valor máximo de Y:</label>
     <input type="number" id="maxY" min="1" value="10">
     <br>
     <label for="figureType">Tipo de figura:</label>
     <select id="figureType">
-        <option value="circle">Circulo</option>
-        <option value="semicircle">Semicirculo</option>
-        <option value="quartercircle">Cuarto de circulo</option>
-        <option value="rectangle">Rectangulo</option>
-        <option value="triangle">Triangulo</option>
-        <option value="righttriangle">Triangulo Rectangulo</option>
+        <option value="circle">Círculo</option>
+        <option value="semicircle">Semicírculo</option>
+        <option value="quartercircle">Cuarto de círculo</option>
+        <option value="rectangle">Rectángulo</option>
+        <option value="triangle">Triángulo</option>
+        <option value="righttriangle">Triángulo Rectángulo</option>
     </select>
     <br>
     <div id="inputFields"></div>
-    <label for="xPos">Posicion X:</label>
+    <label for="xPos">Posición X:</label>
     <input type="number" id="xPos" min="0" required>
-    <label for="yPos">Posicion Y:</label>
+    <label for="yPos">Posición Y:</label>
     <input type="number" id="yPos" min="0" required>
     <br>
     <label for="isHollow">Hueca:</label>
@@ -88,7 +88,7 @@
     <br>
     <button onclick="drawFigure()">Dibujar Figura</button>
     <button onclick="clearCanvas()">Limpiar Plano</button>
-    <button onclick="removeLastShape()">Eliminar ultima Figura</button>
+    <button onclick="removeLastShape()">Eliminar Última Figura</button>
     <br>
     <h2>Punto de referencia para Momento de inercia</h2>
     <label for="refX">Punto de referencia X:</label>
@@ -96,19 +96,13 @@
     <label for="refY">Punto de referencia Y:</label>
     <input type="number" id="refY" min="0">
     <br>
-    <label for="ejeSeleccion">Seleccionar Eje:</label>
-    <select id="ejeSeleccion">
-        <option value="centroidal">Eje centroidal</option>
-        <option value="esquinaIzquierda">Eje Esquina Izquierda</option>
-    </select>
-    <br>
     <button onclick="calculateProperties()">Calcular Centroide y Momento de Inercia</button>
     <canvas id="canvas"></canvas>
     <table id="resultsTable">
         <thead>
             <tr>
                 <th>Figura</th>
-                <th>Area</th>
+                <th>Área</th>
                 <th>Centroide X</th>
                 <th>Centroide Y</th>
                 <th>Momento de Inercia (Ixx)</th>
@@ -126,17 +120,6 @@
         let shapes = [];
         let maxX, maxY;
         let ReferenciaCount = 1;
-        let ejeSeleccionado = 'centroidal';
-
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('ejeSeleccion').addEventListener('change', function() {
-                setEjeSeleccionado(this.value);
-            });
-        });
-
-        function setEjeSeleccionado(eje) {
-            ejeSeleccionado = eje;
-        }
 
         function drawGrid() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -176,7 +159,7 @@
                     inputFields.innerHTML = '<label for="radius">Radio:</label><input type="number" id="radius" min="1" max="' + Math.min(maxX, maxY) + '" required>';
                     break;
                 case 'semicircle':
-                    inputFields.innerHTML = '<label for="radius">Radio:</label><input type="number" id="radius" min="1" max="' + Math.min(maxX, maxY) + '" required> <label for="direction">Direccion:</label><select id="direction"><option value="up">Arriba</option><option value="down">Abajo</option><option value="left">Izquierda</option><option value="right">Derecha</option></select>';
+                    inputFields.innerHTML = '<label for="radius">Radio:</label><input type="number" id="radius" min="1" max="' + Math.min(maxX, maxY) + '" required> <label for="direction">Dirección:</label><select id="direction"><option value="up">Arriba</option><option value="down">Abajo</option><option value="left">Izquierda</option><option value="right">Derecha</option></select>';
                     break;
                 case 'quartercircle':
                     inputFields.innerHTML = '<label for="radius">Radio:</label><input type="number" id="radius" min="1" max="' + Math.min(maxX, maxY) + '" required> <label for="quadrant">Cuadrante:</label><select id="quadrant"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>';
@@ -471,7 +454,7 @@
             const yPos = document.getElementById('yPos').value;
 
             if (isNaN(xPos) || isNaN(yPos)) {
-                alert('La posicion X e Y deben ser numeros validos.');
+                alert('La posición X e Y deben ser números válidos.');
                 return;
             }
             
@@ -481,7 +464,7 @@
                     if (radius > 0) {
                         addShape({ type: 'circle', x: xPos, y: yPos, radius: radius, isHollow: isHollow });
                     } else {
-                        alert('El radio debe ser un numero positivo.');
+                        alert('El radio debe ser un número positivo.');
                     }
                     break;
                 case 'semicircle':
@@ -490,7 +473,7 @@
                     if (semiRadius > 0) {
                         addShape({ type: 'semicircle', x: xPos, y: yPos, radius: semiRadius, direction: direction, isHollow: isHollow });
                     } else {
-                        alert('El radio debe ser un numero positivo.');
+                        alert('El radio debe ser un número positivo.');
                     }
                     break;
                 case 'quartercircle':
@@ -499,7 +482,7 @@
                     if (quarterRadius > 0) {
                         addShape({ type: 'quartercircle', x: xPos, y: yPos, radius: quarterRadius, quadrant: quadrant, isHollow: isHollow });
                     } else {
-                        alert('El radio debe ser un numero positivo.');
+                        alert('El radio debe ser un número positivo.');
                     }
                     break;
                 case 'rectangle':
@@ -508,7 +491,7 @@
                     if (length > 0 && width > 0) {
                         addShape({ type: 'rectangle', x: xPos, y: yPos, length: length, width: width, isHollow: isHollow });
                     } else {
-                        alert('El largo y el ancho deben ser numeros positivos.');
+                        alert('El largo y el ancho deben ser números positivos.');
                     }
                     break;
                 case 'triangle':
@@ -517,7 +500,7 @@
                     if (base > 0 && height > 0) {
                         addShape({ type: 'triangle', x: xPos, y: yPos, base: base, height: height, isHollow: isHollow });
                     } else {
-                        alert('La base y la altura deben ser numeros positivos.');
+                        alert('La base y la altura deben ser números positivos.');
                     }
                     break;
                 case 'righttriangle':
@@ -526,7 +509,7 @@
                     if (rtBase > 0 && rtHeight > 0) {
                         addShape({ type: 'righttriangle', x: xPos, y: yPos, base: rtBase, height: rtHeight, isHollow: isHollow });
                     } else {
-                        alert('La base y la altura deben ser numeros positivos.');
+                        alert('La base y la altura deben ser números positivos.');
                     }
                     break;
             }
@@ -636,6 +619,7 @@
                 Ixx = -Ixx;
                 Iyy = -Iyy;
             }
+        
             return { type: shape.type, area, cx, cy, Ixx, Iyy };
         }
 
@@ -663,14 +647,8 @@
         
             if (hasReferencePoint) {
                 shapeProperties.forEach(props => {
-                    let dx, dy;
-                    if (ejeSeleccionado === 'centroidal') {
-                        dx = props.cx - refX;
-                        dy = props.cy - refY;
-                    } else { 
-                        dx = 0 - refX;
-                        dy = 0 - refY;
-                    }
+                    const dx = props.cx - refX; 
+                    const dy = props.cy - refY;
                     totalIxx += props.Ixx + Math.abs(props.area) * Math.pow(dy, 2);
                     totalIyy += props.Iyy + Math.abs(props.area) * Math.pow(dx, 2);
                 });
